@@ -1,0 +1,145 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Dashboard | Smart Expense Tracker{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <section class="panel hero">
+            <h1>Welcome back, {{ user.username }}</h1>
+            <p>
+                Your finance snapshot updates in real-time as you add transactions.
+                Track your cashflow, spot spending trends, and keep your budget under control.
+            </p>
+            <div class="cta-row">
+                <a href="{% url 'add_transaction' %}" class="btn btn-primary">Add New Transaction</a>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-label">Total Income</div>
+                <div class="stat-value">${{ summary.income_total|floatformat:2 }}</div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-label">Total Expense</div>
+                <div class="stat-value">${{ summary.expense_total|floatformat:2 }}</div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-label">Current Balance</div>
+                <div class="stat-value">${{ summary.balance|floatformat:2 }}</div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-label">This Month Income</div>
+                <div class="stat-value">${{ month_summary.income_total|floatformat:2 }}</div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-label">This Month Expense</div>
+                <div class="stat-value">${{ month_summary.expense_total|floatformat:2 }}</div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-label">This Month Balance</div>
+                <div class="stat-value">${{ month_summary.balance|floatformat:2 }}</div>
+            </article>
+        </section>
+
+        <section class="panel transaction-list">
+            <div class="transaction-header">
+                <h2>Filter Transactions</h2>
+            </div>
+            <form method="get" class="filters-grid">
+                <div class="field-row">
+                    <label for="id_q">Search Description</label>
+                    <input id="id_q" type="text" name="q" value="{{ filters.q }}" class="form-control" placeholder="e.g. coffee, salary">
+                </div>
+                <div class="field-row">
+                    <label for="id_type">Type</label>
+                    <select id="id_type" name="type" class="form-control">
+                        <option value="">All Types</option>
+                        <option value="income" {% if filters.type == 'income' %}selected{% endif %}>Income</option>
+                        <option value="expense" {% if filters.type == 'expense' %}selected{% endif %}>Expense</option>
+                    </select>
+                </div>
+                <div class="field-row">
+                    <label for="id_category">Category</label>
+                    <select id="id_category" name="category" class="form-control">
+                        <option value="">All Categories</option>
+                        {% for category_id, category_name in categories %}
+                            <option value="{{ category_id }}" {% if filters.category == category_id|stringformat:'s' %}selected{% endif %}>{{ category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field-row">
+                    <label for="id_from">From Date</label>
+                    <input id="id_from" type="date" name="from" value="{{ filters.from }}" class="form-control">
+                </div>
+                <div class="field-row">
+                    <label for="id_to">To Date</label>
+                    <input id="id_to" type="date" name="to" value="{{ filters.to }}" class="form-control">
+                </div>
+                <div class="field-row filter-actions">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Reset</a>
+                    <a href="{% url 'export_transactions_csv' %}?q={{ filters.q|urlencode }}&type={{ filters.type|urlencode }}&category={{ filters.category|urlencode }}&from={{ filters.from|urlencode }}&to={{ filters.to|urlencode }}" class="btn btn-secondary">Export CSV</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel transaction-list">
+            <div class="transaction-header">
+                <h2>{% if has_filters %}Filtered{% else %}Recent{% endif %} Transactions</h2>
+            </div>
+
+            {% if transactions %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                                <tr>
+                                    <td>{{ transaction.date }}</td>
+                                    <td>{{ transaction.category.name }}</td>
+                                    <td>{{ transaction.transaction_type|title }}</td>
+                                    <td>
+                                        <span class="amount-{{ transaction.transaction_type }}">
+                                            ${{ transaction.amount|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                    <td>{{ transaction.description|default:'-' }}</td>
+                                    <td class="row-actions">
+                                        <a href="{% url 'edit_transaction' transaction.id %}" class="btn btn-secondary btn-compact">Edit</a>
+                                        <a href="{% url 'delete_transaction' transaction.id %}" class="btn btn-danger btn-compact">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    No transactions yet. Start by adding your first income or expense entry.
+                </div>
+            {% endif %}
+        </section>
+    {% else %}
+        <section class="panel hero">
+            <h1>Smart Expense Tracker</h1>
+            <p>
+                Build better money habits with a clear dashboard for income and expenses.
+                Sign in to start tracking every transaction in one place.
+            </p>
+            <div class="cta-row">
+                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-secondary">Create Account</a>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

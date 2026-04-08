@@ -1,0 +1,36 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}{% if is_edit %}Edit{% else %}Add{% endif %} Transaction | Smart Expense Tracker{% endblock %}
+
+{% block content %}
+    <section class="panel form-card">
+        <h2>{% if is_edit %}Edit{% else %}Add{% endif %} Transaction</h2>
+        <p class="auth-meta">
+            {% if is_edit %}
+                Update this entry to keep your dashboard accurate.
+            {% else %}
+                Record income and expenses to keep your dashboard accurate.
+            {% endif %}
+        </p>
+
+        <form method="post" class="form-grid">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="field-full non-field-errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+                <div class="field-row {% if field.name == 'description' %}field-full{% endif %}">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            <div class="field-full">
+                <button type="submit" class="btn btn-primary">
+                    {% if is_edit %}Update Transaction{% else %}Save Transaction{% endif %}
+                </button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}
