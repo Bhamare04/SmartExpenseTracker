@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Income | Smart Expense Tracker{% endblock %}
+{% block page_title %}Manage your income history{% endblock %}
+{% block content %}
+<section class="content-card">
+  <div class="section-heading split">
+    <div>
+      <h2>Income History</h2>
+      <p>Track salary, freelance payments, and any other source of income.</p>
+    </div>
+    <a class="primary-button" href="{% url 'income_add' %}">Add Income</a>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Source</th><th>Amount</th><th>Date</th><th>Description</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for income in incomes %}
+        <tr>
+          <td>{{ income.source }}</td>
+          <td>{{ income.amount }}</td>
+          <td>{{ income.income_date }}</td>
+          <td>{{ income.description|default:'-' }}</td>
+          <td class="actions-cell">
+            <a href="{% url 'income_edit' income.pk %}">Edit</a>
+            <form method="post" action="{% url 'income_delete' income.pk %}">{% csrf_token %}<button type="submit">Delete</button></form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="empty-table">No income records available.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

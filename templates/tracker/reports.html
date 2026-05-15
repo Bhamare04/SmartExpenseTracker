@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Reports | Smart Expense Tracker{% endblock %}
+{% block page_title %}Reports and analytics for the current financial year{% endblock %}
+{% block content %}
+<section class="card-grid stats-grid">
+  <article class="info-card accent"><span>Total Income</span><strong>{{ income_total }}</strong><p>Financial year {{ year }}</p></article>
+  <article class="info-card"><span>Total Expense</span><strong>{{ expense_total }}</strong><p>Financial year {{ year }}</p></article>
+  <article class="info-card"><span>Savings</span><strong>{{ savings_total }}</strong><p>Income minus expense.</p></article>
+</section>
+
+<section class="content-card">
+  <div class="section-heading split">
+    <div>
+      <h2>Financial Summary</h2>
+      <p>Download and present your results in PDF or CSV format.</p>
+    </div>
+    <div class="topbar-actions">
+      <a class="primary-button" href="{% url 'download_pdf' %}">Download PDF</a>
+      <a class="ghost-button" href="{% url 'download_csv' %}">Download CSV</a>
+    </div>
+  </div>
+  <div class="insight-list compact-list">
+    {% for insight in insights %}<div class="insight-item">{{ insight }}</div>{% endfor %}
+  </div>
+</section>
+
+<section class="panel content-card chart-card">
+  <div class="section-heading">
+    <h2>Charts</h2>
+    <p>Pie, bar, line, and savings trend visualisations.</p>
+  </div>
+  {{ chart_payload|json_script:"chart-data" }}
+  <div class="chart-grid">
+    <div><canvas id="pie-chart"></canvas></div>
+    <div><canvas id="bar-chart"></canvas></div>
+    <div><canvas id="line-chart"></canvas></div>
+    <div><canvas id="savings-chart"></canvas></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Profile | Smart Expense Tracker{% endblock %}
+{% block page_title %}Update your profile and security details{% endblock %}
+{% block content %}
+<section class="dashboard-grid profile-grid">
+  <article class="content-card">
+    <div class="section-heading">
+      <h2>Profile Update</h2>
+      <p>Manage your account details and preferences.</p>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="stack-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="profile" />
+      {{ profile_form.as_p }}
+      <button class="primary-button" type="submit">Update Profile</button>
+    </form>
+  </article>
+
+  <article class="content-card">
+    <div class="section-heading">
+      <h2>Change Password</h2>
+      <p>Keep your account secure.</p>
+    </div>
+    <form method="post" class="stack-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="password" />
+      {{ password_form.as_p }}
+      <button class="primary-button" type="submit">Change Password</button>
+    </form>
+  </article>
+</section>
+
+<section class="content-card profile-preview">
+  <div class="section-heading split">
+    <div>
+      <h2>Account Preview</h2>
+      <p>Useful for viva explanation and screen presentation.</p>
+    </div>
+    {% if profile.profile_image %}<img class="profile-preview-image" src="{{ profile.profile_image.url }}" alt="Profile image" />{% endif %}
+  </div>
+  <div class="two-column-list">
+    <div><h3>Username</h3><p>{{ user.username }}</p></div>
+    <div><h3>Email</h3><p>{{ user.email }}</p></div>
+    <div><h3>Full Name</h3><p>{{ profile.full_name }}</p></div>
+    <div><h3>Mobile</h3><p>{{ profile.mobile_number|default:'-' }}</p></div>
+  </div>
+</section>
+{% endblock %}

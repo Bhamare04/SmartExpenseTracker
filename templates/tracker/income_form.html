@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}{{ mode }} Income | Smart Expense Tracker{% endblock %}
+{% block page_title %}{{ mode }} income record{% endblock %}
+{% block content %}
+<section class="content-card narrow-card">
+  <form method="post" class="stack-form">
+    {% csrf_token %}
+    <div class="section-heading">
+      <h2>{{ mode }} Income</h2>
+      <p>Use this form to create or modify an income entry.</p>
+    </div>
+    {{ form.as_p }}
+    <button class="primary-button" type="submit">Save Income</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+﻿{% extends 'base.html' %}
+{% block title %}Smart Expense Tracker | Home{% endblock %}
+{% block page_title %}Welcome to Smart Expense Tracker{% endblock %}
+{% block content %}
+
+<section class="content-card" style="margin-bottom: 28px; padding: 32px;">
+  <div class="section-heading">
+    <div>
+      <h2 style="margin: 0 0 12px; font-size: 2.2rem;">Manage Your Finances Effortlessly</h2>
+      <p style="color: var(--muted); margin: 0; font-size: 1.1rem;">Track income, control expenses, set budgets, and gain financial insights in real-time.</p>
+    </div>
+  </div>
+  {% if not user.is_authenticated %}
+  <div class="hero-actions" style="margin-top: 24px; gap: 12px;">
+    <a class="primary-button" href="{% url 'register' %}" style="padding: 12px 28px;">Create Account</a>
+    <a class="ghost-button" href="{% url 'login' %}" style="padding: 12px 28px;">Sign In</a>
+  </div>
+  {% else %}
+  <div class="hero-actions" style="margin-top: 24px;">
+    <a class="primary-button" href="{% url 'dashboard' %}" style="padding: 12px 28px;">Go to Dashboard</a>
+  </div>
+  {% endif %}
+</section>
+
+<section class="feature-grid">
+  <article class="feature-card">
+    <i class="fa-solid fa-circle-dollar-to-slot"></i>
+    <h3>Track Income</h3>
+    <p>Record multiple income sources and track your earnings with detailed categorization and dates.</p>
+  </article>
+  <article class="feature-card">
+    <i class="fa-solid fa-receipt"></i>
+    <h3>Manage Expenses</h3>
+    <p>Log expenses with categories, payment methods, and receipts for complete financial visibility.</p>
+  </article>
+  <article class="feature-card">
+    <i class="fa-solid fa-wallet"></i>
+    <h3>Set Budgets</h3>
+    <p>Create monthly budgets and monitor spending with real-time alerts when you approach limits.</p>
+  </article>
+  <article class="feature-card">
+    <i class="fa-solid fa-chart-pie"></i>
+    <h3>View Analytics</h3>
+    <p>Visualize spending patterns with interactive charts and monthly trend analysis.</p>
+  </article>
+</section>
+
+<section class="content-card" style="margin-top: 28px; padding: 28px;">
+  <div class="section-heading">
+    <h2 style="margin: 0 0 16px;">How It Works</h2>
+  </div>
+  <div class="two-column-list">
+    <div>
+      <h4 style="margin: 0 0 12px; color: var(--primary);">1. Create Your Account</h4>
+      <p style="margin: 0 0 16px; color: var(--muted);">Sign up with your email and set your preferences including currency and notification settings.</p>
+      
+      <h4 style="margin: 24px 0 12px; color: var(--primary);">2. Add Your Transactions</h4>
+      <p style="margin: 0; color: var(--muted);">Record income and expenses as they happen. Our smart system suggests categories automatically.</p>
+    </div>
+    <div>
+      <h4 style="margin: 0 0 12px; color: var(--primary);">3. Set Your Budget</h4>
+      <p style="margin: 0 0 16px; color: var(--muted);">Define monthly spending limits and get alerts when you're approaching your budget.</p>
+      
+      <h4 style="margin: 24px 0 12px; color: var(--primary);">4. Review & Export</h4>
+      <p style="margin: 0; color: var(--muted);">Generate detailed reports and export data as CSV or PDF for analysis and presentations.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

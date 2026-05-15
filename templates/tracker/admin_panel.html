@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel | Smart Expense Tracker{% endblock %}
+{% block page_title %}Administrative controls and oversight{% endblock %}
+{% block content %}
+<section class="card-grid stats-grid">
+  <article class="info-card accent"><span>Users</span><strong>{{ user_count }}</strong><p>Registered users.</p></article>
+  <article class="info-card"><span>Incomes</span><strong>{{ income_count }}</strong><p>Income records.</p></article>
+  <article class="info-card"><span>Expenses</span><strong>{{ expense_count }}</strong><p>Expense records.</p></article>
+  <article class="info-card"><span>Budgets</span><strong>{{ budget_count }}</strong><p>Configured budgets.</p></article>
+</section>
+
+<section class="content-card">
+  <div class="section-heading">
+    <h2>Users</h2>
+    <p>View the registered account list.</p>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Username</th><th>Email</th><th>Date Joined</th></tr></thead>
+      <tbody>
+        {% for item in users %}
+        <tr><td>{{ item.username }}</td><td>{{ item.email }}</td><td>{{ item.date_joined }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-card">
+  <div class="section-heading">
+    <h2>Expenses</h2>
+    <p>Delete inappropriate expense records if needed.</p>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>User</th><th>Category</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for item in expenses %}
+        <tr>
+          <td>{{ item.user.username }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.expense_date }}</td>
+          <td>
+            <form method="post" action="{% url 'admin_delete_record' 'expense' item.pk %}">{% csrf_token %}<button type="submit">Delete</button></form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-card">
+  <div class="section-heading">
+    <h2>Income</h2>
+    <p>Review and moderate income records.</p>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>User</th><th>Source</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for item in incomes %}
+        <tr>
+          <td>{{ item.user.username }}</td>
+          <td>{{ item.source }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.income_date }}</td>
+          <td>
+            <form method="post" action="{% url 'admin_delete_record' 'income' item.pk %}">{% csrf_token %}<button type="submit">Delete</button></form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-card">
+  <div class="section-heading">
+    <h2>Budgets</h2>
+    <p>Monthly budget monitoring.</p>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>User</th><th>Month</th><th>Amount</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for item in budgets %}
+        <tr>
+          <td>{{ item.user.username }}</td>
+          <td>{{ item.month }}</td>
+          <td>{{ item.amount }}</td>
+          <td>
+            <form method="post" action="{% url 'admin_delete_record' 'budget' item.pk %}">{% csrf_token %}<button type="submit">Delete</button></form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07111f" />
+    <title>{% block title %}Smart Expense Tracker{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <style>{% include 'includes/inline_styles.html' %}</style>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="{% if user.is_authenticated and user.profile.dark_mode %}dark-mode{% endif %}">
+    <div class="app-shell {% if user.is_authenticated %}authenticated{% endif %}">
+      {% if user.is_authenticated %}
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark">SET</div>
+          <div>
+            <strong>Smart Expense Tracker</strong>
+            <span>Financial Insights</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="{% url 'dashboard' %}"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+          <a href="{% url 'income_list' %}"><i class="fa-solid fa-circle-dollar-to-slot"></i> Income</a>
+          <a href="{% url 'expense_list' %}"><i class="fa-solid fa-receipt"></i> Expenses</a>
+          <a href="{% url 'budget' %}"><i class="fa-solid fa-wallet"></i> Budget</a>
+          <a href="{% url 'reports' %}"><i class="fa-solid fa-chart-pie"></i> Reports</a>
+          <a href="{% url 'profile' %}"><i class="fa-solid fa-user-gear"></i> Profile</a>
+          {% if user.is_superuser %}
+          <a href="{% url 'admin_panel' %}"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
+          {% endif %}
+        </nav>
+        <form action="{% url 'logout' %}" method="post" class="sidebar-footer">
+          {% csrf_token %}
+          <button type="submit" class="ghost-button full-width">Logout</button>
+        </form>
+      </aside>
+      {% endif %}
+
+      <main class="main-shell">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Smart Expense Tracker with Financial Insights</p>
+            <h1>{% block page_title %}Modern expense management for college presentations and interviews{% endblock %}</h1>
+          </div>
+          <div class="topbar-actions">
+            <button type="button" id="theme-toggle" class="icon-button" aria-label="Toggle dark mode">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+            {% if user.is_authenticated %}
+            <div class="user-chip">
+              {% if user.profile.profile_image %}
+              <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}" />
+              {% else %}
+              <span>{{ user.profile.full_name|default:user.username|slice:":1"|upper }}</span>
+              {% endif %}
+              <div>
+                <strong>{{ user.profile.full_name|default:user.username }}</strong>
+                <small>{{ user.email }}</small>
+              </div>
+            </div>
+            {% else %}
+            <a class="ghost-button" href="{% url 'login' %}">Login</a>
+            <a class="primary-button" href="{% url 'register' %}">Register</a>
+            {% endif %}
+          </div>
+        </header>
+
+        {% if messages %}
+        <section class="messages">
+          {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </section>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

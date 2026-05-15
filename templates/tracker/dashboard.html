@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | Smart Expense Tracker{% endblock %}
+{% block page_title %}Dashboard overview for this month{% endblock %}
+{% block content %}
+<section class="card-grid stats-grid">
+  <article class="info-card accent"><span>Total Income</span><strong>{{ income_total }}</strong><p>All recorded income entries.</p></article>
+  <article class="info-card"><span>Total Expense</span><strong>{{ expense_total }}</strong><p>All recorded expense entries.</p></article>
+  <article class="info-card"><span>Remaining Balance</span><strong>{{ remaining_balance }}</strong><p>Income minus expense.</p></article>
+  <article class="info-card"><span>Monthly Savings</span><strong>{{ monthly_savings }}</strong><p>Positive balance for the month.</p></article>
+  <article class="info-card"><span>Expense Percentage</span><strong>{{ expense_percentage|floatformat:0 }}%</strong><p>Expense share compared to income.</p></article>
+  <article class="info-card"><span>Budget Status</span><strong>{% if budget_snapshot.budget %}{% if budget_snapshot.exceeded %}Exceeded{% elif budget_snapshot.warning %}Warning{% else %}Healthy{% endif %}{% else %}No Budget{% endif %}</strong><p>Monthly budget health.</p></article>
+</section>
+
+<section class="dashboard-grid">
+  <article class="panel content-card">
+    <div class="section-heading">
+      <h2>Budget progress</h2>
+      <p>This month’s budget tracking.</p>
+    </div>
+    <div class="progress-track"><span class="progress-fill {% if budget_snapshot.exceeded %}danger{% elif budget_snapshot.warning %}warning{% endif %}" style="width: {{ budget_snapshot.progress }}%"></span></div>
+    <p class="muted-line">Spent {{ budget_snapshot.spent }}{% if budget_snapshot.budget %} of {{ budget_snapshot.budget.amount }}{% else %} of no set budget{% endif %}</p>
+    <div class="insight-list compact-list">
+      {% if budget_snapshot.warning %}<div class="alert-box warning">Alert: spending has crossed 80% of the monthly budget.</div>{% endif %}
+      {% if budget_snapshot.exceeded %}<div class="alert-box danger">Warning: monthly budget exceeded.</div>{% endif %}
+      {% for insight in insights %}<div class="insight-item">{{ insight }}</div>{% endfor %}
+    </div>
+  </article>
+
+  <article class="panel content-card">
+    <div class="section-heading">
+      <h2>Recent transactions</h2>
+      <p>Latest income and expense activity.</p>
+    </div>
+    <div class="transaction-list">
+      {% for item in recent_transactions %}
+      <div class="transaction-row">
+        <div>
+          <strong>{% if item.source %}{{ item.source }}{% else %}{{ item.category }}{% endif %}</strong>
+          <p>{% if item.source %}Income{% else %}Expense{% endif %} · {% if item.income_date %}{{ item.income_date }}{% else %}{{ item.expense_date }}{% endif %}</p>
+        </div>
+        <span class="transaction-amount">{{ item.amount }}</span>
+      </div>
+      {% empty %}
+      <p class="empty-state">No transactions yet. Add your first income or expense.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="panel content-card chart-card">
+  <div class="section-heading">
+    <h2>Financial charts</h2>
+    <p>Monthly trend, category split, and savings signals.</p>
+  </div>
+  {{ chart_payload|json_script:"chart-data" }}
+  <div class="chart-grid">
+    <div><canvas id="pie-chart"></canvas></div>
+    <div><canvas id="bar-chart"></canvas></div>
+    <div><canvas id="line-chart"></canvas></div>
+    <div><canvas id="savings-chart"></canvas></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Register | Smart Expense Tracker{% endblock %}
+{% block page_title %}Create your account{% endblock %}
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
+  <section class="auth-card" style="max-width: 500px;">
+    <form method="post" class="stack-form">
+      {% csrf_token %}
+      <div class="auth-header" style="text-align: center; margin-bottom: 28px;">
+        <h2 style="margin: 0 0 8px; font-size: 1.8rem;">Join Smart Expense Tracker</h2>
+        <p style="margin: 0; color: var(--muted);">Create account to start managing your finances</p>
+      </div>
+      {% for field in form %}
+      <label class="field-group">
+        <span>{{ field.label }}</span>
+        {{ field }}
+        {% if field.help_text %}<small class="hint-text">{{ field.help_text|safe }}</small>{% endif %}
+        {% if field.errors %}<small class="error-text">{{ field.errors|striptags }}</small>{% endif %}
+      </label>
+      {% endfor %}
+      <button class="primary-button full-width" type="submit" style="margin-top: 12px; padding: 14px;">Create Account</button>
+      <p class="muted-link" style="text-align: center; margin-top: 16px; color: var(--muted);">Already registered? <a href="{% url 'login' %}" style="color: var(--primary); text-decoration: none;">Sign in</a></p>
+    </form>
+  </section>
+</div>
+{% endblock %}

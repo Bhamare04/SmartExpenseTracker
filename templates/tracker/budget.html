@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Budget | Smart Expense Tracker{% endblock %}
+{% block page_title %}Set and monitor your monthly budget{% endblock %}
+{% block content %}
+<section class="card-grid stats-grid">
+  <article class="info-card accent"><span>Budget</span><strong>{% if snapshot.budget %}{{ snapshot.budget.amount }}{% else %}Not Set{% endif %}</strong><p>{{ month_name }}</p></article>
+  <article class="info-card"><span>Spent</span><strong>{{ snapshot.spent }}</strong><p>Current month spend.</p></article>
+  <article class="info-card"><span>Progress</span><strong>{{ snapshot.progress|floatformat:0 }}%</strong><p>Budget utilization.</p></article>
+</section>
+
+<section class="dashboard-grid">
+  <article class="content-card">
+    <div class="section-heading">
+      <h2>Budget Status</h2>
+      <p>Keep monthly spending under control.</p>
+    </div>
+    <div class="progress-track"><span class="progress-fill {% if snapshot.exceeded %}danger{% elif snapshot.warning %}warning{% endif %}" style="width: {{ snapshot.progress }}%"></span></div>
+    {% if snapshot.warning %}<div class="alert-box warning">You have crossed 80% of the monthly budget.</div>{% endif %}
+    {% if snapshot.exceeded %}<div class="alert-box danger">Budget exceeded. Review your spending immediately.</div>{% endif %}
+  </article>
+
+  <article class="content-card narrow-card">
+    <div class="section-heading">
+      <h2>{% if snapshot.budget %}Update{% else %}Set{% endif %} Budget</h2>
+      <p>Use the current month by default.</p>
+    </div>
+    <form method="post" class="stack-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="primary-button" type="submit">Save Budget</button>
+    </form>
+  </article>
+</section>
+{% endblock %}

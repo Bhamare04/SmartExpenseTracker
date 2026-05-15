@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}{{ mode }} Expense | Smart Expense Tracker{% endblock %}
+{% block page_title %}{{ mode }} expense record{% endblock %}
+{% block content %}
+<section class="content-card narrow-card">
+  <form method="post" enctype="multipart/form-data" class="stack-form">
+    {% csrf_token %}
+    <div class="section-heading">
+      <h2>{{ mode }} Expense</h2>
+      <p>Descriptions can auto-suggest categories for faster entry.</p>
+    </div>
+    {{ form.as_p }}
+    <button class="primary-button" type="submit">Save Expense</button>
+  </form>
+</section>
+{% endblock %}
