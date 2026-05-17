@@ -1,7 +1,7 @@
 """Django settings for Smart Expense Tracker."""
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,8 +25,19 @@ def load_env_file(env_path: Path) -> None:
 load_env_file(BASE_DIR / '.env')
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-smart-expense-tracker-dev-key')
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
+
+raw_csrf_trusted_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in raw_csrf_trusted_origins.split(',') if origin.strip()]
+
+render_external_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+if render_external_hostname and render_external_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_external_hostname)
+
+render_external_url = os.getenv('RENDER_EXTERNAL_URL')
+if render_external_url and render_external_url not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append(render_external_url)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,17 +79,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'smart_expense_tracker.wsgi.application'
 
-MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
+def get_env_value(*names, default=''):
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value
+    return default
+
+
+MYSQL_DATABASE = get_env_value('MYSQL_DATABASE', 'MYSQLDATABASE')
 
 if MYSQL_DATABASE:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': MYSQL_DATABASE,
-            'USER': os.getenv('MYSQL_USER', 'root'),
-            'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
-            'HOST': os.getenv('MYSQL_HOST', '127.0.0.1'),
-            'PORT': os.getenv('MYSQL_PORT', '3306'),
+            'USER': get_env_value('MYSQL_USER', 'MYSQLUSER', default='root'),
+            'PASSWORD': get_env_value('MYSQL_PASSWORD', 'MYSQLPASSWORD'),
+            'HOST': get_env_value('MYSQL_HOST', 'MYSQLHOST', default='127.0.0.1'),
+            'PORT': get_env_value('MYSQL_PORT', 'MYSQLPORT', default='3306'),
             'OPTIONS': {
                 'charset': 'utf8mb4',
             },
@@ -111,9 +131,26 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
