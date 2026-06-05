@@ -26,10 +26,21 @@ load_env_file(BASE_DIR / '.env')
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-smart-expense-tracker-dev-key')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv(
+    'ALLOWED_HOSTS',
+    'localhost,127.0.0.1,.vercel.app'
+).split(',') if host.strip()]
 
-raw_csrf_trusted_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '')
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in raw_csrf_trusted_origins.split(',') if origin.strip()]
+raw_csrf_trusted_origins = os.getenv(
+    'CSRF_TRUSTED_ORIGINS',
+    'https://*.vercel.app'
+)
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in raw_csrf_trusted_origins.split(',')
+    if origin.strip()
+]
 
 render_external_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
 if render_external_hostname and render_external_hostname not in ALLOWED_HOSTS:
