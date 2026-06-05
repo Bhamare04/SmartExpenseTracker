@@ -5,3 +5,4 @@ gunicorn
 Pillow
 reportlab
 cryptography
+dj-database-url
