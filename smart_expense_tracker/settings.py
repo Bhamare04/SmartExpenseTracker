@@ -28,9 +28,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-smart-expense-tracker-dev-
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = [host.strip() for host in os.getenv(
     'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,.vercel.app'
+    'localhost,127.0.0.1,.vercel.app,.onrender.com'
 ).split(',') if host.strip()]
-
 raw_csrf_trusted_origins = os.getenv(
     'CSRF_TRUSTED_ORIGINS',
     'https://*.vercel.app'
